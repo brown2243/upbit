@@ -30,16 +30,17 @@ const requestOptions = {
 rp(requestOptions)
   .then((res) => {
     const data = res.data;
-    const filtered = data.filter((val) => coinList.includes(val["symbol"]));
-    const maped = filtered.map((val) => {
-      const symbol = val["symbol"];
-      const cap = val["quote"]["USD"]["market_cap"];
-      return [symbol, cap];
-    });
-    maped.forEach((v) => {
-      worksheet.addRow({ Ticker: v[0], Market_Cap: v[1] });
-    });
-    workbook.xlsx.writeFile("MarketCap.xlsx");
+    console.log(data);
+    // const filtered = data.filter((val) => coinList.includes(val["symbol"]));
+    // const maped = filtered.map((val) => {
+    //   const symbol = val["symbol"];
+    //   const cap = val["quote"]["USD"]["market_cap"];
+    //   return [symbol, cap];
+    // });
+    //   maped.forEach((v) => {
+    //     worksheet.addRow({ Ticker: v[0], Market_Cap: v[1] });
+    //   });
+    //   workbook.xlsx.writeFile("MarketCap.xlsx");
   })
   .catch((err) => {
     console.log("API call error:", err.message);

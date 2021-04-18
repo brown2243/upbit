@@ -1,120 +1,117 @@
-const coinList = [
-  "BTC",
-  "ETH",
-  "NEO",
-  "MTL",
-  "LTC",
-  "XRP",
-  "ETC",
-  "OMG",
-  "SNT",
-  "WAVES",
-  "XEM",
-  "QTUM",
-  "LSK",
-  "STEEM",
-  "XLM",
-  "ARDR",
-  "KMD",
-  "ARK",
-  "STORJ",
-  "GRS",
-  "REP",
-  "EMC2",
-  "ADA",
-  "SBD",
-  "POWR",
-  "BTG",
-  "ICX",
-  "EOS",
-  "TRX",
-  "SC",
-  "IGNIS",
-  "ONT",
-  "ZIL",
-  "POLY",
-  "ZRX",
-  "LOOM",
-  "BCH",
-  "ADX",
-  "BAT",
-  "IOST",
-  "DMT",
-  "RFR",
-  "CVC",
-  "IQ",
-  "IOTA",
-  "MFT",
-  "ONG",
-  "GAS",
-  "UPP",
-  "ELF",
-  "KNC",
-  "BSV",
-  "THETA",
-  "EDR",
-  "QKC",
-  "BTT",
-  "MOC",
-  "ENJ",
-  "TFUEL",
-  "MANA",
-  "ANKR",
-  "AERGO",
-  "ATOM",
-  "TT",
-  "CRE",
-  "SOLVE",
-  "MBL",
-  "TSHP",
-  "WAXP",
-  "HBAR",
-  "MED",
-  "MLK",
-  "STPT",
-  "ORBS",
-  "VET",
-  "CHZ",
-  "PXL",
-  "STMX",
-  "DKA",
-  "HIVE",
-  "KAVA",
-  "AHT",
-  "LINK",
-  "XTZ",
-  "BORA",
-  "JST",
-  "CRO",
-  "TON",
-  "SXP",
-  "LAMB",
-  "HUNT",
-  "MARO",
-  "PLA",
-  "DOT",
-  "SRM",
-  "MVL",
-  "PCI",
-  "STRAX",
-  "AQT",
-  "BCHA",
-  "GLM",
-  "QTCON",
-  "SSX",
-  "META",
-  "OBSR",
-  "FCT2",
-  "LBC",
-  "CBK",
-  "SAND",
-  "HUM",
-  "DOGE",
-  "STRK",
-  "PUNDIX",
-  "FLOW",
-  "DAWN",
-  "AXS",
-  "STX",
-];
-module.exports = coinList;
+"BTC"
+,"ETH"
+,"NEO"
+,"MTL"
+,"LTC"
+,"XRP"
+,"ETC"
+,"OMG"
+,"SNT"
+,"WAVES"
+,"XEM"
+,"QTUM"
+,"LSK"
+,"STEEM"
+,"XLM"
+,"ARDR"
+,"KMD"
+,"ARK"
+,"STORJ"
+,"GRS"
+,"REP"
+,"EMC2"
+,"ADA"
+,"SBD"
+,"POWR"
+,"BTG"
+,"ICX"
+,"EOS"
+,"TRX"
+,"SC"
+,"IGNIS"
+,"ONT"
+,"ZIL"
+,"POLY"
+,"ZRX"
+,"LOOM"
+,"BCH"
+,"ADX"
+,"BAT"
+,"IOST"
+,"DMT"
+,"RFR"
+,"CVC"
+,"IQ"
+,"IOTA"
+,"MFT"
+,"ONG"
+,"GAS"
+,"UPP"
+,"ELF"
+,"KNC"
+,"BSV"
+,"THETA"
+,"EDR"
+,"QKC"
+,"BTT"
+,"MOC"
+,"ENJ"
+,"TFUEL"
+,"MANA"
+,"ANKR"
+,"AERGO"
+,"ATOM"
+,"TT"
+,"CRE"
+,"SOLVE"
+,"MBL"
+,"TSHP"
+,"WAXP"
+,"HBAR"
+,"MED"
+,"MLK"
+,"STPT"
+,"ORBS"
+,"VET"
+,"CHZ"
+,"PXL"
+,"STMX"
+,"DKA"
+,"HIVE"
+,"KAVA"
+,"AHT"
+,"LINK"
+,"XTZ"
+,"BORA"
+,"JST"
+,"CRO"
+,"TON"
+,"SXP"
+,"LAMB"
+,"HUNT"
+,"MARO"
+,"PLA"
+,"DOT"
+,"SRM"
+,"MVL"
+,"PCI"
+,"STRAX"
+,"AQT"
+,"BCHA"
+,"GLM"
+,"QTCON"
+,"SSX"
+,"META"
+,"OBSR"
+,"FCT2"
+,"LBC"
+,"CBK"
+,"SAND"
+,"HUM"
+,"DOGE"
+,"STRK"
+,"PUNDIX"
+,"FLOW"
+,"DAWN"
+,"AXS"
+,"STX"
