@@ -1,245 +1,260 @@
 require("dotenv").config();
-const request = require("request");
-const rp = require("request-promise");
 const fs = require("fs");
-const uuidv4 = require("uuid/v4");
-const sign = require("jsonwebtoken").sign;
-const fetch = require("node-fetch");
+const WebSocket = require("ws");
 const Upbit = require("./upbit_lib");
 
 const access_key = process.env.UPBIT_OPEN_API_ACCESS_KEY;
 const secret_key = process.env.UPBIT_OPEN_API_SECRET_KEY;
-const server_url = process.env.UPBIT_OPEN_API_SERVER_URL;
-
-// Upbit.prototype.accounts = accounts;
-// Upbit.prototype.order_list = order_list;
-// Upbit.prototype.order_bid = order_bid;
-// Upbit.prototype.order_ask = order_ask;
-// Upbit.prototype.order_detail = order_detail;
-// Upbit.prototype.order_delete = order_delete;
-// Upbit.prototype.order_chance = order_chance;
-// Upbit.prototype.market_all = market_all;
-// Upbit.prototype.market_minute = market_minute;
-// Upbit.prototype.market_day = market_day;
-// Upbit.prototype.market_week = market_week;
-// Upbit.prototype.market_month = market_month;
-// Upbit.prototype.market_trade_tick = market_trade_tick;
-// Upbit.prototype.market_ticker = market_ticker;
-// Upbit.prototype.trade_orderbook = trade_orderbook;
 
 const cheapCoins = [
-  "ONG",
-  "PLA",
-  "SSX",
-  "CBK",
-  "TON",
-  "HUNT",
-  "AQT",
-  "PXL",
-  // "SBD",
-  // "QTCON",
-  // "DMT",
-  // "MOC",
-  // "OBSR",
-  // "UPP",
-  // "STPT",
-  // "EDR",
-  // "AERGO",
-  // "HUM",
-  // "EMC2",
-  // "IGNIS",
-  // "RFR",
-  // "SOLVE",
-  // "LBC",
-  // "GRS",
-  // "MBL",
-  // "STRK",
-  // "LAMB",
-  // "TT",
-  // "MLK",
-  // "ADX",
-  // "GAS",
-  // "CRE",
-  // "LOOM",
-  // "DKA",
-  // "MARO",
-  // "MFT",
-  // "BORA",
-  // "DAWN",
-  // "POWR",
-  // "HIVE",
-  // "TSHP",
-  // "META",
-  // "QKC",
-  // "POLY",
-  // "ELF",
-  // "MTL",
-  // "IQ",
-  // "ARK",
-  // "AXS",
-  // "SRM",
-  // "MED",
-  // "STRAX",
-  // "WAXP",
-  // "ORBS",
-  // "JST",
+  "KRW-ONG",
+  "KRW-PLA",
+  // "KRW-SSX",
+  // "KRW-CBK",
+  // "KRW-TON",
+  // "KRW-HUNT",
+  // "KRW-AQT",
+  // "KRW-PXL",
+  // "KRW-SBD",
+  // "KRW-QTCON",
+  // "KRW-DMT",
+  // "KRW-MOC",
+  // "KRW-OBSR",
+  // "KRW-UPP",
+  // "KRW-STPT",
+  // "KRW-EDR",
+  // "KRW-AERGO",
+  // "KRW-HUM",
+  // "KRW-EMC2",
+  // "KRW-IGNIS",
+  // "KRW-RFR",
+  // "KRW-SOLVE",
+  // "KRW-LBC",
+  // "KRW-GRS",
+  // "KRW-MBL",
+  // "KRW-STRK",
+  // "KRW-LAMB",
+  // "KRW-TT",
+  // "KRW-MLK",
+  // "KRW-ADX",
+  // "KRW-GAS",
+  // "KRW-CRE",
+  // "KRW-LOOM",
+  // "KRW-DKA",
+  // "KRW-MARO",
+  // "KRW-MFT",
+  // "KRW-BORA",
+  // "KRW-DAWN",
+  // "KRW-POWR",
+  // "KRW-HIVE",
+  // "KRW-TSHP",
+  // "KRW-META",
+  // "KRW-QKC",
+  // "KRW-POLY",
+  // "KRW-ELF",
+  // "KRW-MTL",
+  // "KRW-IQ",
+  // "KRW-ARK",
+  // "KRW-AXS",
+  // "KRW-SRM",
+  // "KRW-MED",
+  // "KRW-STRAX",
+  // "KRW-WAXP",
+  // "KRW-ORBS",
+  // "KRW-JST",
+  // "KRW-MVL",
 ];
-// .forEach((v, i) => console.log(i, v));
-function sleep(ms) {
-  const wakeUpTime = Date.now() + ms;
-  while (Date.now() < wakeUpTime) {}
-}
+// .forEach((v, i) => console.log(i, v)); // 55개
 
-async function check5daysAVG(upbit, coin) {
-  const data = await upbit.market_day("KRW-" + coin, null, 5);
-  // console.log(data.data);
+// async function sleep(ms) {
+//   const wakeUpTime = Date.now() + ms;
+//   while (Date.now() < wakeUpTime) {}
+// }
+
+async function check6daysAVG(upbit, coin) {
+  const data = await upbit.market_day(coin, null, 6);
+  console.log(data.remain_sec, data.remain_min);
   if (!data.data) {
     console.log("check5daysAVG error", coin, data.data);
     return { coin: coin, error: true };
   }
   const AVG =
     data.data.reduce((acc, cur, i) => {
-      return acc + cur["prev_closing_price"];
+      if (i === 0) {
+        return 0;
+      }
+      return acc + cur["trade_price"];
     }, 0) / 5;
-  const target = (
-    (data.data[0].high_price - data.data[0].low_price) *
-    0.495
-  ).toFixed(3);
+
+  const target = Number(
+    (
+      (data.data[1].high_price - data.data[1].low_price) * 0.49 +
+      data.data[0].opening_price
+    ).toFixed(4)
+  );
   return { coin: coin, AVG: AVG, target: target };
 }
 
 // 한번에 다 가져오면, 갯수제한에 걸려서 안되는가 싶었다.
-// 그러나 어떻게 지연을 시켜도, 갯수가 많아지면 값을 제대로 못받는 코인이 있음
-// 내가 손으로 5개씩 받아오면 잘되는데, 반복문으로 5개씩 부르고 지연을 10초씩 줘도 안됌.
+// 10개 초과하면 null
+// 10개 받고 지연을 하든, 한번받고 지연한번을 하든 10개이상은 안줌.
+// 최악의 경우에는 매일 내가 손으로 해야할 수도...
+// settimeout으로 해결
 async function init() {
   console.log("시작합니다.");
   const upbit = new Upbit(secret_key, access_key);
-  const DP_5daysAvg = [];
+
+  const account = await upbit.accounts();
+  const KRW = Number(account.data[0].balance);
+  const CNT = 10;
+  const splitedKRW = Math.floor(KRW / CNT) - 100;
+  const wallet = { KRW: splitedKRW, cnt: CNT };
+
+  const DP_5daysAvg = {};
   cheapCoins.forEach(async (coin, i) => {
-    // if (i % 5 === 0) await sleep(2000);
-    console.log(`${i}번째`);
-    // await sleep(2000);
-    const value = await check5daysAVG(upbit, coin);
-    DP_5daysAvg.push(value);
+    setTimeout(async () => {
+      const value = await check6daysAVG(upbit, coin);
+      DP_5daysAvg[value["coin"]] = {
+        AVG: value["AVG"],
+        target: value["target"],
+      };
+    }, i * 180);
   });
   setTimeout(() => {
-    console.log(DP_5daysAvg);
-  }, 2000);
+    serverStart(DP_5daysAvg, wallet);
+  }, cheapCoins.length * 200);
 }
-init();
+// init();
 
-// async function myAccount() {
-//   // 내 자산 조회
-//   const payload = {
-//     access_key: access_key,
-//     nonce: uuidv4(),
-//   };
+async function buyOrder(ticker, wallet) {
+  console.log("buyOrder", ticker, wallet);
+  const upbit = new Upbit(secret_key, access_key);
 
-//   const token = sign(payload, secret_key);
+  const order = await upbit.order_bid(ticker, wallet["KRW"]);
+  console.log(order);
 
-//   const options = {
-//     method: "GET",
-//     url: server_url + "/v1/accounts",
-//     headers: { Authorization: `Bearer ${token}` },
-//   };
+  // 카톡 알림 기능 구현
+  //
 
-//   request(options, (error, response, body) => {
-//     if (error) throw new Error(error);
-//     fs.writeFile("myAccount.js", body, (err) => {
-//       if (err) console.log(err);
-//     });
-//   });
-// }
+  wallet["cnt"] = wallet["cnt"] - 1;
+}
 
-// async function showCoinTickerList() {
-//   // 전체 목록 조회
-//   // 전체 목록중 KRW거래가 가능한 코인 티커만 coinlist파일에 기록하는 기능
-//   const options = { method: "GET" };
+async function serverStart(targetList, wallet) {
+  const code_list = Object.keys(targetList).map((v) => `"${v}"`);
+  // 만약에 모든 종목을 매수 한다면 작동되는 코드
+  // if (code_list.length === 0) {
+  //   console.log("매수가 완료되었습니다!!");
+  //   process.exit();
+  // }
 
-//   fetch("https://api.upbit.com/v1/market/all?isDetails=false", options)
-//     .then((res) => {
-//       res.json().then((data) => {
-//         if (data["error"]) {
-//           console.log("error");
-//           return;
-//         }
-//         const filtered = data
-//           .map((v) => {
-//             const [front, back] = v["market"].split("-");
-//             if (front === "KRW") {
-//               return back;
-//             }
-//           })
-//           .filter((v) => v);
-//         console.log(filtered);
-//         const text = filtered.map((v) => `${JSON.stringify(v)}\n`).toString();
-//         fs.writeFile("coinlist.js", text, "utf8", (err) => {
-//           console.log(err);
-//         });
-//       });
-//     })
-//     .catch((err) => console.error(err));
-// }
-// // name은 종목 Ticker, type은 [days, weeks, months],count는 캔들 갯수
-// function fetchCandleData(name, type, count) {
-//   // 한번에 가져올 수 있는 캔들은 200개인데
-//   // 언제부터 언제까지를 설정할 수 없기 때문에 200개 이상의
-//   // 과거 캔들을 가져올순 없는 듯.
-//   const options = { method: "GET" };
-//   const URL = `https://api.upbit.com/v1/candles/${type}/?market=KRW-${name}&count=${count}`;
-//   fetch(URL, options)
-//     .then((res) => {
-//       res.json().then((data) => {
-//         if (data["error"]) {
-//           console.log("error");
-//           return;
-//         }
-//         return data;
-//         // const text = data.map((v) => `${JSON.stringify(v)}\n`).toString();
-//         // fs.writeFile("KRW-BTC.txt", text, "utf8", (err) => {
-//         //   console.log(err);
-//         // });
-//       });
-//     })
-//     .catch((err) => console.error(err));
-// }
-// // 분 단위. 가능한 값 : 1, 3, 5, 15, 10, 30, 60, 240
-// function fetchCandleDataMinute(name, min, count) {
-//   const options = { method: "GET" };
-//   const URL = `https://api.upbit.com/v1/candles/minutes/${min}?market=KRW-${name}&count=${count}`;
-//   fetch(URL, options)
-//     .then((res) => {
-//       res.json().then((data) => {
-//         if (data["error"]) {
-//           console.log("error");
-//           return;
-//         }
-//         console.log(data);
-//         // const text = data.map((v) => `${JSON.stringify(v)}\n`).toString();
-//         // fs.writeFile("KRW-BTC.txt", text, "utf8", (err) => {
-//         //   console.log(err);
-//         // });
-//       });
-//     })
-//     .catch((err) => console.error(err));
-// }
-// // 현재가 정보
-// function priceNow() {
-//   const options = { method: "GET" };
-//   fetch("https://api.upbit.com/v1/ticker?markets=KRW-BTC", options)
-//     .then((res) => {
-//       res.json().then((data) => console.log(data));
-//     })
-//     .catch((err) => console.error(err));
-// }
+  console.log("마켓수:" + code_list.length);
+  // 체결 서버 접속
+  tradeServerConnect(code_list.join(","), targetList, wallet);
+}
 
-// function checkBeforeBuy(coinlist) {
-//   const arr = [];
-//   coinlist.forEach((coin, i) => {
-//     setTimeout(() => {
-//       const data = fetchCandleData(coin, "days", 5);
-//       console.log(data);
-//     }, i * 200);
-//   });
-// }
-// // checkBeforeBuy(["IQ", "BTC"]);
+function tradeServerConnect(codes, targetList, wallet) {
+  console.log("tradeServerConnect", targetList);
+  const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
+  ws.on("open", () => {
+    console.log("trade websocket is connected");
+    ws.send(
+      '[{"ticket":"fiwjfoew"},{"type":"trade","codes":[' +
+        codes +
+        '], "isOnlyRealtime":"true" },{"format":"SIMPLE"}]'
+    );
+  });
+  ws.on("close", () => {
+    console.log("trade websocket is closed");
+    // 다하면 서버 종료
+    // setTimeout(function () {
+    //   console.log("trade 재접속");
+    //   tradeServerConnect(codes, targetList, wallet);
+    // }, 1000);
+  });
+  ws.on("message", (data) => {
+    try {
+      const str = data.toString("utf-8");
+      const json = JSON.parse(str);
+      if (targetList[json.cd]) {
+        // console.log(json.cd, json.tp, targetList[json.cd]);
+        if (wallet.cnt <= 0) {
+          console.log("매수가 완료되었습니다!!");
+          ws.close();
+        }
+
+        if (
+          json.tp >= targetList[json.cd].AVG &&
+          json.tp >= targetList[json.cd].target
+        ) {
+          console.log(json.cd, json.tp, targetList[json.cd]);
+          console.log(json.cd, "코인 매수 진행하고 시세체크 멈춤");
+          // 매수 함수 실행
+          // 코인 이름, 매수가
+          // 잔고가 남았다면
+          buyOrder(json.cd, wallet, ws);
+          if (wallet.cnt <= 0) {
+            console.log("매수가 완료되었습니다!!");
+            ws.close();
+          }
+          delete targetList[json.cd];
+          serverStart(targetList);
+        }
+
+        // 매수조건에 맞는 종목이 없어서(하락장)
+        // 코드 작동여부 확인 위해 하방으로 설정해봤음.
+        // if (
+        //   json.tp <= targetList[json.cd].AVG &&
+        //   json.tp <= targetList[json.cd].target
+        // ) {
+        //   console.log("낮다.");
+        //   delete targetList[json.cd];
+        //   start(targetList);
+        // }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  });
+}
+
+const moment = require("moment");
+require("moment-timezone");
+moment.tz.setDefault("Asia/Seoul");
+
+setInterval(async () => {
+  const date = moment().format("YYYY-MM-DD HH:mm:ss").substring(11, 16);
+  const hours = date.substr(0, 2);
+  const mins = date.substr(3, 2);
+  console.log(`${hours}:${mins}`);
+  if (hours === "08" && mins === "58") {
+    console.log("오전 08:58, 전량 매도 작동.");
+    allSell();
+  }
+
+  if (hours === "09" && mins === "01") {
+    console.log("오전 09:01, 매수 프로그램 다시 시작.");
+    init();
+  }
+}, 1000);
+
+async function allSell() {
+  const upbit = new Upbit(secret_key, access_key);
+  const account = await upbit.accounts();
+
+  account.data.forEach((coin, i) => {
+    if (i === 0) {
+      return;
+    }
+
+    setTimeout(async () => {
+      console.log(coin.currency, coin.balance);
+      const sellOrder = await upbit.order_ask(coin.currency, coin.balance);
+      console.log(sellOrder);
+    }, i * 200);
+  });
+
+  setTimeout(async () => {
+    const account = await upbit.accounts();
+    console.log("전량 매도후, 현금", account.data[0]);
+  }, account.length * 300);
+}

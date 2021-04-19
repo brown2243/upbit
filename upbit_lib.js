@@ -91,16 +91,16 @@ async function order_list(market, state, uuids, page) {
   return result;
 }
 
-// 주문(매수)
-async function order_bid(market, volume, price) {
+// 주문(시장가 매수)
+async function order_bid(market, price) {
   //market: KRW-BTC
   const url = "https://api.upbit.com/v1/orders";
   let qs = {
     market: market,
     side: "bid",
-    volume: volume,
+    volume: null,
     price: price,
-    ord_type: "limit",
+    ord_type: "price",
   };
 
   const query = queryEncode(qs);
@@ -115,16 +115,16 @@ async function order_bid(market, volume, price) {
   return result;
 }
 
-// 주문(매도)
-async function order_ask(market, volume, price) {
+// 주문(시장가 매도)
+async function order_ask(market, volume) {
   //market: KRW-BTC
   const url = "https://api.upbit.com/v1/orders";
   let qs = {
     market: market,
     side: "ask",
     volume: volume,
-    price: price,
-    ord_type: "limit",
+    price: null,
+    ord_type: "market",
   };
 
   const query = queryEncode(qs);
@@ -246,7 +246,7 @@ async function market_month(market, to, count) {
   return result;
 }
 
-// 채결 정보
+// 체결 정보
 async function market_trade_tick(market, to, count) {
   //to: yyyy-MM-dd'T'HH:mm:ssXXX
   const url = "https://api.upbit.com/v1/trades/ticks";
