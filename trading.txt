@@ -1,0 +1,17 @@
+4월 20일
+전량 매도후, 현금 : 887,000 , 전날 : 1,115,000 , 변동 -228,000
+매도 IQ , 금액 5118.7845665, [object Object]
+매도 TT , 금액 6205.72563413, [object Object]
+매도 UPP , 금액 742.68579032, [object Object]
+매도 OBSR , 금액 4088.67222479, [object Object]
+매도 MBL , 금액 6991.06550826, [object Object]
+매도 CRE , 금액 4267.93871936, [object Object]
+매도 CBK , 금액 6.20281877, [object Object]
+매도 MTL , 금액 5.03239929, [object Object]
+매도 STRAX , 금액 2.69279753, [object Object]
+매도 AXS , 금액 1.31168958, [object Object]
+09:19
+매수 KRW-DAWN , 금액 76261, [object Object]
+매수 KRW-STPT , 금액 81060, [object Object]
+매수 KRW-EMC2 , 금액 81060, [object Object]
+매수 KRW-AXS , 금액 36851, [object Object]
