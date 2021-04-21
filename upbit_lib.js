@@ -1,5 +1,7 @@
 const rp = require("request-promise");
 const sign = require("jsonwebtoken").sign;
+const uuidv4 = require("uuid/v4");
+const crypto = require("crypto");
 const queryEncode = require("querystring").encode;
 
 async function request(url, qs, token, method) {
