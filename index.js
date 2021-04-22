@@ -14,7 +14,7 @@ const cheapCoins = [
   "KRW-ONG",
   "KRW-PLA",
   "KRW-SSX",
-  // "KRW-CBK",
+  "KRW-CBK",
   "KRW-TON",
   "KRW-HUNT",
   "KRW-AQT",
@@ -56,7 +56,7 @@ const cheapCoins = [
   "KRW-QKC",
   "KRW-POLY",
   "KRW-ELF",
-  // "KRW-MTL",
+  "KRW-MTL",
   "KRW-IQ",
   "KRW-ARK",
   "KRW-AXS",
@@ -67,7 +67,7 @@ const cheapCoins = [
   "KRW-ORBS",
   "KRW-JST",
   "KRW-MVL",
-  // "KRW-KAVA",
+  "KRW-KAVA",
   "KRW-SXP",
   "KRW-KMD",
   "KRW-CVC",
@@ -81,11 +81,17 @@ const cheapCoins = [
 ];
 // .forEach((v, i) => console.log(i, v));
 ///////////////////////////////////
+
 const upbit = new Upbit(secret_key, access_key);
 const checkList = {};
 const wallet = {};
 const coinInfo = {};
+const buyCount = [0, 0, 0]; // 1. profit <= 0.035, 2. 0.035 < profit
+// 1. 매수 1번 매도, 2.매수 2번 매도, 3. 1시간 뒤 매도, 4. 손절
+const sellCount = [0, 0, 0, 0, 0];
+
 ///////////////////////////////////
+
 cheapCoins.forEach((v) => {
   checkList[v] = {
     weHave: false,
@@ -99,12 +105,12 @@ async function init() {
   console.log("시작합니다.");
   await updateWallet();
   const KRW = Number(wallet.KRW.balance);
-  const CNT = 5;
+  const CNT = 10; // 원금 분할 할 때
   const splitedKRW = CNT ? Math.floor(KRW / CNT) - 100 : 0;
   console.log(`${CNT} 분할, ${splitedKRW}원`);
-  wallet["splitedKRW"] = 60000;
-  // 10만원
+  wallet["splitedKRW"] = 60000; // 그냥 고정으로
   wallet["cnt"] = CNT;
+  // 10만원
 
   cheapCoins.forEach(async (coin, i) => {
     setTimeout(async () => {
@@ -138,7 +144,6 @@ async function init() {
 async function serverStart() {
   const code_list = Object.keys(coinInfo).map((v) => `"${v}"`);
   console.log("체크하는 코인 갯수: " + code_list.length);
-  console.log(wallet);
   console.log(coinInfo);
   tradeServerConnect(code_list.join(","));
 }
@@ -166,44 +171,35 @@ function tradeServerConnect(codes) {
     try {
       const str = data.toString("utf-8");
       const json = JSON.parse(str);
+      const coin = json.cd.substring(4);
       const buyPrice = coinInfo[json.cd].avg + coinInfo[json.cd].buy;
       const sellPrice = coinInfo[json.cd].avg + coinInfo[json.cd].sell;
-      const coin = json.cd.substring(4);
-      // wallet에 있으면 매도체크
-      if (checkList[json.cd].weHave) {
-        if (
-          (wallet[json.cd],
-          coinInfo[json.cd].profit >= 0.035 && sellPrice <= json.tp)
-        ) {
-          checkList[json.cd].weHave = false;
-          checkList[json.cd].canBuy = false;
-          setTimeout(() => {
-            checkList[json.cd].canBuy = true;
-          }, 1000 * 60 * 15);
-          console.log(`${json.cd}코인, 현재가 ${json.tp}원 에서 매도`);
-          // 매도 함수(전량 시장가 매도)
-          await upbit.order_ask(json.cd, wallet[coin].balance);
-          await updateWallet();
-        }
-        // profit 0.035 이하
-        else if (
-          coinInfo[json.cd].profit < 0.035 &&
-          coinInfo[json.cd].avg * 1.15 <= json.tp
-        ) {
-          // 팔자마자 하락해서 재 매수 되는 상황 방지를 위해
-          checkList[json.cd].weHave = false;
-          checkList[json.cd].canBuy = false;
-          setTimeout(() => {
-            checkList[json.cd].canBuy = true;
-          }, 1000 * 60 * 15);
-
-          console.log(`${json.cd}코인, 현재가 ${json.tp}원 에서 매도`);
-          // 매도 함수(전량 시장가 매도)
-          await upbit.order_ask(json.cd, wallet[coin].balance);
-          await updateWallet();
-        }
-        // 매수 조건
-      } else if (
+      // // wallet에 있으면 매도체크
+      // if (checkList[json.cd].weHave) {
+      //   if (
+      //     (wallet[json.cd],
+      //     coinInfo[json.cd].profit >= 0.035 && sellPrice <= json.tp)
+      //   ) {
+      //     console.log(`${json.cd}코인, 현재가 ${json.tp}원 에서 매도`);
+      //     sellProcess(2, json.cd, wallet[coin].balance);
+      //   }
+      //   // profit 0.035 이하
+      //   else if (
+      //     coinInfo[json.cd].profit < 0.035 &&
+      //     coinInfo[json.cd].avg * 1.15 <= json.tp
+      //   ) {
+      //     console.log(`${json.cd}코인, 현재가 ${json.tp}원 에서 매도`);
+      //     sellProcess(1, json.cd, wallet[coin].balance);
+      //   }
+      //   // 평균가 대비 -5% 빠지면 손절
+      //   // 매수 시점이 평균가 보다 높기 때문에 손실은 6 ~ 7%(수수료+슬리피지)
+      //   else if (json.tp <= coinInfo[json.cd].avg * 0.95) {
+      //     sellProcess(4, json.cd, wallet[coin].balance);
+      //   }
+      // }
+      // // 매수 조건
+      // else
+      if (
         wallet["KRW"].balance >= wallet.splitedKRW &&
         checkList[json.cd].canBuy &&
         coinInfo[json.cd].profit > 0.015
@@ -214,17 +210,12 @@ function tradeServerConnect(codes) {
           sellPrice <= json.tp &&
           json.tp < sellPrice * 1.005
         ) {
-          (checkList[json.cd].weHave = true),
-            (checkList[json.cd].canBuy = false),
-            console.log(
-              `1. ${json.cd}코인 매수, 현재가 ${json.tp}원, 목표 매도가 ${
-                coinInfo[json.cd].avg * 1.15
-              }원`
-            );
-          // 매수 함수(정해진 금액 시장가 매수)
-          await upbit.order_bid(json.cd, wallet.splitedKRW * 1.25);
-          await updateWallet();
-          wallet["cnt"] -= 1;
+          console.log(
+            `1번 ${json.cd}코인 현재가 ${json.tp}원 매도가 ${
+              coinInfo[json.cd].avg * 1.15
+            }원`
+          );
+          buyProcess(1, json.cd, wallet.splitedKRW * 1.25);
 
           // profit이 0.035 이상은 buy에 매수해서 sell 매도
         } else if (
@@ -232,20 +223,37 @@ function tradeServerConnect(codes) {
           buyPrice <= json.tp &&
           json.tp < buyPrice * 1.005
         ) {
-          (checkList[json.cd].weHave = true),
-            (checkList[json.cd].canBuy = false),
-            console.log(
-              `2. ${json.cd}코인 매수, 현재가 ${json.tp}원 매도 목표가 ${sellPrice}원`
-            );
-          await upbit.order_bid(json.cd, wallet.splitedKRW);
-          await updateWallet();
-          wallet["cnt"] -= 1;
+          console.log(
+            `2번${json.cd}코인 현재가 ${json.tp}원 매도가 ${sellPrice}원`
+          );
+          buyProcess(2, json.cd, wallet.splitedKRW);
         }
       }
     } catch (e) {
       console.log(e);
     }
   });
+}
+
+// 계좌 업데이트
+async function updateWallet() {
+  const account = await upbit.accounts();
+  console.log("계좌 업데이트");
+  account.data.forEach((coin, i) => {
+    wallet[coin.currency] = {
+      balance: coin.balance,
+      avg_buy_price: coin.avg_buy_price,
+    };
+    checkList[`KRW-${coin.currency}`] = {
+      weHave: true,
+      canBuy: false,
+    };
+    // if (i !== 0) {
+    //   checkList[`KRW-${coin.currency}`].weHave = true;
+    //   checkList[`KRW-${coin.currency}`].canBuy = false;
+    // }
+  });
+  console.log(wallet);
 }
 
 // 4시간 봉, 전날 고가 - 저가 갭 가져오는 함수
@@ -276,26 +284,44 @@ async function getTargetPrice(coin) {
   };
 }
 
-// 계좌 업데이트
-async function updateWallet() {
-  const account = await upbit.accounts();
-  console.log("계좌 업데이트");
-  account.data.forEach((coin, i) => {
-    checkList[`KRW-${coin.currency}`] = {
-      weHave: true,
-      canBuy: false,
-    };
-    wallet[coin.currency] = {
-      balance: coin.balance,
-      avg_buy_price: coin.avg_buy_price,
-    };
-  });
+// 매수
+async function buyProcess(type, coin, price) {
+  if (type === 1) buyCount[1] += 1;
+  else if (type === 2) buyCount[2] += 1;
+  checkList[coin].weHave = true;
+  checkList[coin].canBuy = false;
+  console.log(buyCount);
+  // 매수 함수(정해진 금액 시장가 매수)
+  await upbit.order_bid(coin, price).then(updateWallet);
+
+  // // 1시간 뒤에도 홀딩중이면, 전량 매도 로직
+  //     setTimeout(() => {
+  //       if(checkList[coin].weHave){
+  //         sellProcess(3, coin, balance)
+  //       }
+  //     }, 1000*60*60)
+}
+// 매도
+async function sellProcess(type, coin, balance) {
+  if (type === 1) sellCount[1] += 1;
+  else if (type === 2) sellCount[2] += 1;
+  else if (type === 3) sellCount[3] += 1;
+  else if (type === 4) sellCount[4] += 1;
+
+  // 팔자마자 하락해서 재 매수 되는 상황 방지를 위해
+  checkList[coin].weHave = false;
+  checkList[coin].canBuy = false;
+  setTimeout(() => {
+    checkList[coin].canBuy = true;
+  }, 1000 * 60 * 30 * type);
+
+  console.log(`${type}. ${coin}코인 매도`);
+  console.log(sellCount);
+  // 매도 함수(전량 시장가 매도)
+  await upbit.order_ask(coin, balance).then(updateWallet);
 }
 
-// 매수,매도 함수를 작성해야, 좀더 깔끔할 듯.
-// 매수
-// 매도
-
+// 모든 종목 매도
 async function allSell() {
   const account = await upbit.accounts();
   account.data.forEach((coin, i) => {
