@@ -90,8 +90,6 @@ const buyCount = [0, 0, 0]; // 1. profit <= 0.035, 2. 0.035 < profit
 // 1. 매수 1번 매도, 2.매수 2번 매도, 3. 1시간 뒤 매도, 4. 손절
 const sellCount = [0, 0, 0, 0, 0];
 
-///////////////////////////////////
-
 cheapCoins.forEach((v) => {
   checkList[v] = {
     weHave: false,
@@ -99,8 +97,11 @@ cheapCoins.forEach((v) => {
   };
 });
 
+/////////////////////////////////////
 // allSell();
-init();
+// init();
+updateWallet().then((res) => console.log("1", wallet));
+
 async function init() {
   console.log("시작합니다.");
   await updateWallet();
@@ -240,6 +241,9 @@ async function updateWallet() {
   const account = await upbit.accounts();
   console.log("계좌 업데이트");
   account.data.forEach((coin, i) => {
+    if (coin.currency === "ADA" || coin.currency === "VET") {
+      return;
+    }
     wallet[coin.currency] = {
       balance: coin.balance,
       avg_buy_price: coin.avg_buy_price,
@@ -325,7 +329,7 @@ async function sellProcess(type, coin, balance) {
 async function allSell() {
   const account = await upbit.accounts();
   account.data.forEach((coin, i) => {
-    if (i === 0) {
+    if (i === 0 || coin.currency === "ADA" || coin.currency === "VET") {
       return;
     }
     setTimeout(async () => {
@@ -338,6 +342,22 @@ async function allSell() {
     }, i * 500);
   });
 }
+// async function allSell() {
+//   const account = await upbit.accounts();
+//   account.data.forEach((coin, i) => {
+//     if (i === 0) {
+//       return;
+//     }
+//     setTimeout(async () => {
+//       console.log(coin);
+//       const sellOrder = await upbit.order_ask(
+//         `KRW-${coin.currency}`,
+//         coin.balance
+//       );
+//       console.log(sellOrder);
+//     }, i * 500);
+//   });
+// }
 
 // 직전 5일의 종가 평균
 async function check6daysAVG(upbit, coin) {
