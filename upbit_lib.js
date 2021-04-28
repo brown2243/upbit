@@ -138,6 +138,7 @@ async function order_ask(market, volume) {
   const token = sign(payload, this.secret_key);
 
   let result = await request(url, qs, token, "POST");
+  // if(!result.success) order_ask(market, volume)
   return result;
 }
 

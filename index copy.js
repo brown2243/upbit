@@ -11,78 +11,78 @@ const secret_key = process.env.UPBIT_OPEN_API_SECRET_KEY;
 const Upbit = require("./upbit_lib");
 
 const cheapCoins = [
-  "KRW-ADA",
   "KRW-ONG",
   "KRW-PLA",
-  "KRW-SSX",
-  "KRW-CBK",
-  "KRW-TON",
-  "KRW-HUNT",
-  "KRW-AQT",
-  "KRW-PXL",
-  "KRW-SBD",
-  "KRW-QTCON",
-  "KRW-DMT",
-  "KRW-MOC",
-  "KRW-OBSR",
-  "KRW-UPP",
-  "KRW-STPT",
-  "KRW-EDR",
-  "KRW-AERGO",
-  "KRW-HUM",
-  "KRW-EMC2",
-  "KRW-IGNIS",
-  "KRW-RFR",
-  "KRW-SOLVE",
-  "KRW-LBC",
-  "KRW-GRS",
-  "KRW-MBL",
-  "KRW-STRK",
-  "KRW-LAMB",
-  "KRW-TT",
-  "KRW-MLK",
-  "KRW-ADX",
-  "KRW-GAS",
-  "KRW-CRE",
-  "KRW-LOOM",
-  "KRW-DKA",
-  "KRW-MARO",
-  "KRW-MFT",
-  "KRW-BORA",
-  "KRW-DAWN",
-  "KRW-POWR",
-  "KRW-HIVE",
-  "KRW-TSHP",
-  "KRW-META",
-  "KRW-QKC",
-  "KRW-POLY",
-  "KRW-ELF",
-  "KRW-MTL",
-  "KRW-IQ",
-  "KRW-ARK",
-  "KRW-AXS",
-  "KRW-SRM",
-  "KRW-MED",
-  "KRW-STRAX",
-  "KRW-WAXP",
-  "KRW-ORBS",
-  "KRW-JST",
-  "KRW-MVL",
-  "KRW-KAVA",
-  "KRW-SXP",
-  "KRW-KMD",
-  "KRW-CVC",
-  "KRW-ARDR",
-  "KRW-STEEM",
-  "KRW-SAND",
-  "KRW-GLM",
-  "KRW-STMX",
-  "KRW-REP",
-  "KRW-FCT2",
-  "KRW-KNC",
+  // "KRW-SSX",
+  // "KRW-CBK",
+  // "KRW-TON",
+  // "KRW-HUNT",
+  // "KRW-AQT",
+  // "KRW-PXL",
+  // "KRW-SBD",
+  // "KRW-QTCON",
+  // "KRW-DMT",
+  // "KRW-MOC",
+  // "KRW-OBSR",
+  // "KRW-UPP",
+  // "KRW-STPT",
+  // "KRW-EDR",
+  // "KRW-AERGO",
+  // "KRW-HUM",
+  // "KRW-EMC2",
+  // "KRW-IGNIS",
+  // "KRW-RFR",
+  // "KRW-SOLVE",
+  // "KRW-LBC",
+  // "KRW-GRS",
+  // "KRW-MBL",
+  // "KRW-STRK",
+  // "KRW-LAMB",
+  // "KRW-TT",
+  // "KRW-MLK",
+  // "KRW-ADX",
+  // "KRW-GAS",
+  // "KRW-CRE",
+  // "KRW-LOOM",
+  // "KRW-DKA",
+  // "KRW-MARO",
+  // "KRW-MFT",
+  // "KRW-BORA",
+  // "KRW-DAWN",
+  // "KRW-POWR",
+  // "KRW-HIVE",
+  // "KRW-TSHP",
+  // "KRW-META",
+  // "KRW-QKC",
+  // "KRW-POLY",
+  // "KRW-ELF",
+  // "KRW-MTL",
+  // "KRW-IQ",
+  // "KRW-ARK",
+  // "KRW-AXS",
+  // "KRW-SRM",
+  // "KRW-MED",
+  // "KRW-STRAX",
+  // "KRW-WAXP",
+  // "KRW-ORBS",
+  // "KRW-JST",
+  // "KRW-MVL",
+  // "KRW-KAVA",
+  // "KRW-SXP",
+  // "KRW-KMD",
+  // "KRW-CVC",
+  // "KRW-ARDR",
+  // "KRW-STEEM",
+  // "KRW-SAND",
+  // "KRW-GLM",
+  // "KRW-STMX",
+  // "KRW-REP",
+  // "KRW-FCT2",
 ];
 // .forEach((v, i) => console.log(i, v));
 ///////////////////////////////////
+
+let isServerOpenTime = true;
 const upbit = new Upbit(secret_key, access_key);
 const checkList = {};
 const wallet = {};
@@ -90,12 +90,7 @@ const coinInfo = {};
 const buyCount = [0, 0, 0]; // 1. profit <= 0.035, 2. 0.035 < profit
 // 1. 매수 1번 매도, 2.매수 2번 매도, 3. 1시간 뒤 매도, 4. 손절
 const sellCount = [0, 0, 0, 0, 0];
-const exception = [
-  // "ADA"
-];
-
-let canBuyNow = true;
-let isServerOpenTime = true;
+const exception = ["ADA", "SAND", "SXP", "LBC"];
 
 cheapCoins.forEach((v) => {
   checkList[v] = {
@@ -104,8 +99,11 @@ cheapCoins.forEach((v) => {
   };
 });
 
+/////////////////////////////////////
+// 350 150 100 100
+
 init();
-// allSell(1);
+// allSell();
 // updateWallet().then((res) => console.log(wallet));
 
 async function init() {
@@ -115,8 +113,9 @@ async function init() {
   const CNT = 10; // 원금 분할 할 때
   const splitedKRW = CNT ? Math.floor(KRW / CNT) - 100 : 0;
   console.log(`${CNT} 분할, ${splitedKRW}원`);
-  wallet["splitedKRW"] = 150000; // 그냥 고정으로
+  wallet["splitedKRW"] = 80000; // 그냥 고정으로
   wallet["cnt"] = CNT;
+  // 10만원
 
   cheapCoins.forEach(async (coin, i) => {
     setTimeout(async () => {
@@ -125,22 +124,75 @@ async function init() {
     }, i * 150);
   });
 
+  // 00:30, 01:00, 01:30 물량 매도 후, 서버종료
+  // 06:30부터 다시 작동
+  setInterval(() => {
+    const date = moment().format("YYYY-MM-DD HH:mm:ss").substring(11, 16);
+    const hours = date.substr(0, 2);
+    const mins = date.substr(3, 2);
+    console.log(`${hours}:${mins}`);
+    if (hours === "09" && mins === "00") {
+      console.log("코인 가격 업데이트");
+      cheapCoins.forEach(async (coin, i) => {
+        setTimeout(async () => {
+          const value = await getTargetPrice(coin);
+          coinInfo[coin] = value;
+        }, i * 150);
+      });
+    }
+    if (hours === "00" && mins === "30") {
+      console.log("00:30 All Sell Time");
+      allSell(0.3);
+    } else if (hours === "01" && mins === "00") {
+      console.log("01:00 All Sell Time");
+      allSell(0.5);
+    } else if (hours === "01" && mins === "30") {
+      console.log("01:30 All Sell Time");
+      isServerOpenTime = false;
+      allSell(1).then((res) => {
+        console.log("전량 매도완료 서버 종료");
+        ws.close();
+      });
+    } else if (hours === "06" && mins === "30") {
+      isServerOpenTime = true;
+      console.log("06:30 Server restart time");
+      serverStart();
+    }
+  }, 1000 * 60);
+
   setTimeout(() => {
     console.log(coinInfo);
     serverStart();
   }, cheapCoins.length * 170);
 }
 
+// const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
+// setTimeout(() => {
+//   console.log("//////////////////////////////////////");
+//   console.log("종료 이벤트");
+//   // ws.close();
+//   serverClose();
+// }, 8000);
+
+const WebSocketURL = "wss://api.upbit.com/websocket/v1";
+module.exports = (server) => {
+  const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
+};
+
 async function serverStart() {
   const code_list = Object.keys(coinInfo).map((v) => `"${v}"`);
   console.log("체크하는 코인 갯수: " + code_list.length);
   tradeServerConnect(code_list.join(","));
 }
+// async function serverClose(ws) {
+//   // const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
+//   console.log("server Close");
+//   ws.close();
+// }
 
 async function tradeServerConnect(codes) {
   console.log("tradeServerConnect");
-  const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
-
+  // const ws = new WebSocket("wss://api.upbit.com/websocket/v1");
   ws.on("open", () => {
     console.log("trade websocket is connected");
     ws.send(
@@ -149,8 +201,8 @@ async function tradeServerConnect(codes) {
         '], "isOnlyRealtime":"true" },{"format":"SIMPLE"}]'
     );
   });
-  ws.on("close", (err) => {
-    console.log("trade websocket is closed", err);
+  ws.on("close", () => {
+    console.log("trade websocket is closed");
     if (isServerOpenTime) {
       console.log("trade websocket is closed by Error");
       setTimeout(function () {
@@ -163,16 +215,17 @@ async function tradeServerConnect(codes) {
     try {
       const str = data.toString("utf-8");
       const json = JSON.parse(str);
-      const buyPrice = coinInfo[json.cd].opening + coinInfo[json.cd].buy;
-      const sellPrice = coinInfo[json.cd].opening + coinInfo[json.cd].sell;
-      // console.log(json);
+      const coin = json.cd.substring(4);
+      const buyPrice = coinInfo[json.cd].avg + coinInfo[json.cd].buy;
+      const sellPrice = coinInfo[json.cd].avg + coinInfo[json.cd].sell;
+      console.log(json);
       // 고점대비 -10% 하락하면 매도
       if (checkList[json.cd].weHave) {
         if (checkList[json.cd].topPrice < json.tp) {
           checkList[json.cd].topPrice = json.tp;
-        } else if (checkList[json.cd].topPrice * 0.92 >= json.tp) {
+        } else if (checkList[json.cd].topPrice * 0.905 >= json.tp) {
           console.log(`${json.cd}코인, 현재가 ${json.tp}원 에서 매도`);
-          sellProcess(json.cd, json.tp);
+          // sellProcess(json.cd, json.tp);
         }
       }
 
@@ -202,108 +255,60 @@ async function tradeServerConnect(codes) {
       // }
       // 매수 조건
       else if (
-        canBuyNow &&
         wallet["KRW"].balance >= wallet.splitedKRW &&
-        // wallet["KRW"].balance >= 1200000 &&
         checkList[json.cd].canBuy &&
-        coinInfo[json.cd].profit > 0.015 &&
-        coinInfo[json.cd].profit < 0.15
+        coinInfo[json.cd].profit > 0.015
       ) {
+        // profit이 ~ 0.035는 sell에 매수해서 1.15배에 매도
         if (
           coinInfo[json.cd].profit < 0.035 &&
           sellPrice <= json.tp &&
           json.tp < sellPrice * 1.005
         ) {
           console.log(`1번 ${json.cd}코인 현재가 ${json.tp}원`);
-          buyProcess(1, json.cd, wallet.splitedKRW * 1.25);
+          // buyProcess(1, json.cd, wallet.splitedKRW * 1.25);
+
+          // profit이 0.035 이상은 buy에 매수해서 sell 매도
         } else if (
           coinInfo[json.cd].profit >= 0.035 &&
           buyPrice <= json.tp &&
           json.tp < buyPrice * 1.005
         ) {
           console.log(`2번${json.cd}코인 현재가 ${json.tp}원`);
-          buyProcess(2, json.cd, wallet.splitedKRW);
+          // buyProcess(2, json.cd, wallet.splitedKRW);
         }
       }
     } catch (e) {
       console.log(e);
     }
   });
-  // 00:30, 01:00, 01:30 물량 매도 후, 서버종료
-  // 06:30부터 다시 작동
-  setInterval(() => {
-    const date = moment().format("YYYY-MM-DD HH:mm:ss").substring(11, 16);
-    const hours = date.substr(0, 2);
-    const mins = date.substr(3, 2);
-    console.log(`${hours}:${mins}`);
-    if (hours === "09" && mins === "00") {
-      console.log("코인 가격 업데이트");
-      cheapCoins.forEach(async (coin, i) => {
-        setTimeout(async () => {
-          const value = await getTargetPrice(coin);
-          coinInfo[coin] = value;
-        }, i * 150);
-      });
-    } else if (hours === "21" && mins === "03") {
-      canBuyNow = false;
-      console.log("Sell Time Start");
-      console.log(`Sell Time!  ${hours}:${mins}`);
-      allSell(0.15);
-    } else if (hours === "21" && mins === "13") {
-      console.log(`Sell Time!  ${hours}:${mins}`);
-      allSell(0.35);
-    } else if (hours === "21" && mins === "31") {
-      console.log(`Sell Time!  ${hours}:${mins}`);
-      allSell(0.5);
-
-      // } else if (hours === "21" && mins === "39") {
-    } else if (hours === "23" && mins === "28") {
-      console.log(`Sell Time Finish!  ${hours}:${mins}`);
-      isServerOpenTime = false;
-      allSell(1).then((res) => {
-        console.log("전량 매도완료 서버 종료");
-        ws.close();
-      });
-    } else if (hours === "06" && mins === "34") {
-      isServerOpenTime = true;
-      canBuyNow = true;
-      console.log(`${hours}:${mins} Server restart time`);
-      serverStart();
-    }
-  }, 1000 * 60);
 }
 
 // 계좌 업데이트
 async function updateWallet() {
   const account = await upbit.accounts();
   console.log("계좌 업데이트");
+  // const exception = ["ADA", "SAND", "SXP", "LBC"];
   account.data.forEach((coin, i) => {
-    let total = 0;
-    if (i === 0) total = coin.balance;
-    else total = Number(coin.balance) * Number(coin.avg_buy_price);
-
-    // if (exception.includes(coin.currency)) {
-    //   checkList[`KRW-${coin.currency}`] = {
-    //     weHave: false,
-    //     canBuy: false,
-    //     topPrice: coin.avg_buy_price,
-    //   };
-    //   return;
-    // }
-
-    if (total >= 10000) {
-      wallet[coin.currency] = {
-        balance: coin.balance,
-        avg_buy_price: coin.avg_buy_price,
-      };
+    if (exception.includes(coin.currency)) {
       checkList[`KRW-${coin.currency}`] = {
-        weHave: true,
+        weHave: false,
         canBuy: false,
         topPrice: coin.avg_buy_price,
       };
+      return;
     }
+    wallet[coin.currency] = {
+      balance: coin.balance,
+      avg_buy_price: coin.avg_buy_price,
+    };
+    checkList[`KRW-${coin.currency}`] = {
+      weHave: true,
+      canBuy: false,
+      topPrice: coin.avg_buy_price,
+    };
   });
-  // console.log(wallet);
+  console.log(wallet);
 }
 
 // 4시간 봉, 전날 고가 - 저가 갭 가져오는 함수
@@ -312,10 +317,7 @@ async function getTargetPrice(coin) {
   // console.log(days.remain_sec, days.remain_min);
   if (!days.data) {
     console.log("getTargetPrice error", coin);
-    setTimeout(() => {
-      getTargetPrice(coin);
-    }, 500);
-    // return { coin: coin, error: true };
+    return { coin: coin, error: true };
   }
   const gap = days.data[1].high_price - days.data[1].low_price;
   const opening = days.data[0].opening_price;
@@ -329,6 +331,7 @@ async function getTargetPrice(coin) {
     buy: buy,
     sell: sell,
     profit: (sell - buy) / opening,
+    // expectation: (opening + sell) / (opening + buy),
   };
 }
 
@@ -341,8 +344,8 @@ async function buyProcess(type, coin, price) {
   console.log(`buyCount : ${buyCount}`);
   console.log(coinInfo[coin]);
   // 매수 함수(정해진 금액 시장가 매수)
-  await upbit.order_bid(coin, price);
-  setTimeout(updateWallet, 500);
+  await upbit.order_bid(coin, price).then((res) => updateWallet);
+
   // // 1시간 뒤에도 홀딩중이면, 전량 매도 로직
   //     setTimeout(() => {
   //       if(checkList[coin].weHave){
@@ -367,15 +370,12 @@ async function sellProcess(coin, price) {
     checkList[coin].canBuy = true;
   }, 1000 * 60 * 45 * type);
 
-  console.log(
-    `${type}. ${coin}코인, 매수가 ${
-      wallet[coin.substring(4)].avg_buy_price
-    }원, 매도가${price}원 매도`
-  );
+  console.log(`${type}. ${coin}코인 매도`);
   console.log(`sellCount : ${sellCount}`);
   // 매도 함수(전량 시장가 매도)
-  await upbit.order_ask(coin, wallet[coin.substring(4)].balance);
-  setTimeout(updateWallet, 500);
+  await upbit
+    .order_ask(coin, wallet[coin.substring(4)].balance)
+    .then((res) => updateWallet);
 }
 
 // 모든 종목 매도
@@ -384,14 +384,14 @@ async function allSell(percent) {
   account.data.forEach((coin, i) => {
     if (exception.includes(coin.currency)) return;
     setTimeout(async () => {
+      console.log(coin);
       const sellOrder = await upbit.order_ask(
         `KRW-${coin.currency}`,
         coin.balance * percent
       );
       console.log(sellOrder);
-    }, i * 320);
+    }, i * 200);
   });
-  setTimeout(updateWallet, account.data.length * 340);
 }
 
 // 직전 5일의 종가 평균
