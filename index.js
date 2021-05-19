@@ -104,8 +104,8 @@ cheapCoins.forEach((v) => {
   };
 });
 
-init();
-// allSell(1);
+// init();
+allSell(1);
 // updateWallet().then((res) => console.log(wallet));
 
 async function init() {
